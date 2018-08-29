@@ -39,7 +39,6 @@
 
 1. 安装 [Docker](https://www.docker.com/community-edition#/download) version **17.03+**
 2. 安装 [Docker Compose](https://docs.docker.com/compose/install/) version **1.6.0+**
-3. 克隆本项目 (git clone https://github.com/Zer0d0y/docker-elk.git)
 
 ### SELinux
 
@@ -56,6 +55,7 @@ $ chcon -R system_u:object_r:admin_home_t:s0 docker-elk/
 
 ```console
 $ echo "nameserver 9.9.9.9" > /etc/resolv.conf
+$ git clone https://github.com/Zer0d0y/docker-elk.git
 $ docker-compose build && docker-compose up -d
 ```
 
