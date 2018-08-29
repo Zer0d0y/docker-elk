@@ -6,7 +6,7 @@
 * [logstash](https://github.com/elastic/logstash-docker)
 * [kibana](https://github.com/elastic/kibana-docker)
 
-**注意**: 其他特性分支:
+其他特性分支:
 
 * [`x-pack`](https://github.com/deviantony/docker-elk/tree/x-pack): X-Pack 支持
 * [`searchguard`](https://github.com/deviantony/docker-elk/tree/searchguard): Search Guard 支持
@@ -39,7 +39,7 @@
 
 1. 安装 [Docker](https://www.docker.com/community-edition#/download) version **17.03+**
 2. 安装 [Docker Compose](https://docs.docker.com/compose/install/) version **1.6.0+**
-3. 克隆本项目
+3. 克隆本项目 (git clone https://github.com/Zer0d0y/docker-elk.git)
 
 ### SELinux
 
@@ -76,13 +76,13 @@ $ nc localhost 5000 < /path/to/logfile.log
 
 ## 初始设置
 
-### 创建Kibana默认 index pattern
+### 创建默认Kibana index pattern
 
 #### 1.通过Kibana web UI
 
 **NOTE**: 在通过Kibana Web UI配置Logstash索引模式之前，您需要将数据注入Logstash。 然后你要做的就是点击* Create *按钮。
 
-参考 [Connect Kibana with
+参考：[Connect Kibana with
 Elasticsearch](https://www.elastic.co/guide/en/kibana/current/connect-to-elasticsearch.html) 
 
 #### 2.使用命令行
@@ -112,7 +112,7 @@ Elasticsearch默认配置文件： `elasticsearch/config/elasticsearch.yml`.
 
 ### Elasticsearch cluster配置
 
-参考: [Scaling out
+参考：[Scaling out
 Elasticsearch](https://github.com/deviantony/docker-elk/wiki/Elasticsearch-cluster)
 
 ## 存储
@@ -131,7 +131,7 @@ elasticsearch:
 
 把数据存储到： `/path/to/storage`.
 
-* **注意:** [Elasticsearch镜像使用非特权用户 `elasticsearch` user][esuser] , 所以挂载的数据目录所有者uid必须为 `1000`.
+**NOTE:** [Elasticsearch镜像使用非特权用户 `elasticsearch` user][esuser] , 所以挂载的数据目录所有者uid必须为 `1000`.
 
 [esuser]: https://github.com/elastic/elasticsearch-docker/blob/016bcc9db1dd97ecd0ff60c1290e7fa9142f8ddd/templates/Dockerfile.j2#L22
 
@@ -180,4 +180,4 @@ $ docker-compose build
 $ docker-compose up
 ```
 
-**注意**: 参考[upgrade instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html)
+参考：[upgrade instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html)
