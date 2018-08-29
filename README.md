@@ -1,126 +1,93 @@
-# Elastic stack (ELK) on Docker
+# 容器化Elastic stack (ELK)
 
-[![Join the chat at https://gitter.im/deviantony/docker-elk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/deviantony/docker-elk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Elastic Stack version](https://img.shields.io/badge/ELK-6.4.0-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/312)
-[![Build Status](https://api.travis-ci.org/deviantony/docker-elk.svg?branch=master)](https://travis-ci.org/deviantony/docker-elk)
-
-Run the latest version of the [Elastic stack](https://www.elastic.co/elk-stack) with Docker and Docker Compose.
-
-It will give you the ability to analyze any data set by using the searching/aggregation capabilities of Elasticsearch
-and the visualization power of Kibana.
-
-Based on the official Docker images from Elastic:
+基于Elastic的官方Docker镜像:
 
 * [elasticsearch](https://github.com/elastic/elasticsearch-docker)
 * [logstash](https://github.com/elastic/logstash-docker)
 * [kibana](https://github.com/elastic/kibana-docker)
 
-**Note**: Other branches in this project are available:
+**注意**: 其他特性分支:
 
-* [`x-pack`](https://github.com/deviantony/docker-elk/tree/x-pack): X-Pack support
-* [`searchguard`](https://github.com/deviantony/docker-elk/tree/searchguard): Search Guard support
-* [`vagrant`](https://github.com/deviantony/docker-elk/tree/vagrant): run Docker inside Vagrant
+* [`x-pack`](https://github.com/deviantony/docker-elk/tree/x-pack): X-Pack 支持
+* [`searchguard`](https://github.com/deviantony/docker-elk/tree/searchguard): Search Guard 支持
 
-## Contents
+## 目录
 
-1. [Requirements](#requirements)
-   * [Host setup](#host-setup)
+1. [要求](#要求)
+   * [主机配置](#主机配置)
    * [SELinux](#selinux)
-   * [Docker for Windows](#docker-for-windows)
-2. [Getting started](#getting-started)
-   * [Bringing up the stack](#bringing-up-the-stack)
-   * [Initial setup](#initial-setup)
-3. [Configuration](#configuration)
-   * [How can I tune the Kibana configuration?](#how-can-i-tune-the-kibana-configuration)
-   * [How can I tune the Logstash configuration?](#how-can-i-tune-the-logstash-configuration)
-   * [How can I tune the Elasticsearch configuration?](#how-can-i-tune-the-elasticsearch-configuration)
-   * [How can I scale out the Elasticsearch cluster?](#how-can-i-scale-up-the-elasticsearch-cluster)
-4. [Storage](#storage)
-   * [How can I persist Elasticsearch data?](#how-can-i-persist-elasticsearch-data)
-5. [Extensibility](#extensibility)
-   * [How can I add plugins?](#how-can-i-add-plugins)
-   * [How can I enable the provided extensions?](#how-can-i-enable-the-provided-extensions)
-6. [JVM tuning](#jvm-tuning)
-   * [How can I specify the amount of memory used by a service?](#how-can-i-specify-the-amount-of-memory-used-by-a-service)
-   * [How can I enable a remote JMX connection to a service?](#how-can-i-enable-a-remote-jmx-connection-to-a-service)
-7. [Updates](#updates)
-   * [Using a newer stack version](#using-a-newer-stack-version)
+2. [使用](#使用)
+   * [启动](#启动)
+   * [初始设置](#初始设置)
+3. [配置](#配置)
+   * [Kibana配置](#Kibana配置)
+   * [Logstash配置](#Logstash配置)
+   * [Elasticsearch配置](#Elasticsearch配置)
+   * [Elasticsearch cluster配置](#Elasticsearch cluster配置)
+4. [存储](#storage)
+   * [Elasticsearch数据持久化](#Elasticsearch数据持久化)
+5. [扩展](#扩展)
+   * [添加插件](#添加插件)
+6. [JVM调整](#JVM调整)
+   * [内存设置](#内存设置)
+7. [升级](#升级)
+   * [升级版本](#升级版本)
 
-## Requirements
+## 要求
 
-### Host setup
+### 主机配置
 
-1. Install [Docker](https://www.docker.com/community-edition#/download) version **17.03+**
-2. Install [Docker Compose](https://docs.docker.com/compose/install/) version **1.6.0+**
-3. Clone this repository
+1. 安装 [Docker](https://www.docker.com/community-edition#/download) version **17.03+**
+2. 安装 [Docker Compose](https://docs.docker.com/compose/install/) version **1.6.0+**
+3. 克隆本项目
 
 ### SELinux
 
-On distributions which have SELinux enabled out-of-the-box you will need to either re-context the files or set SELinux
-into Permissive mode in order for docker-elk to start properly. For example on Redhat and CentOS, the following will
-apply the proper context:
 
 ```console
 $ chcon -R system_u:object_r:admin_home_t:s0 docker-elk/
 ```
 
-### Docker for Windows
 
-If you're using Docker for Windows, ensure the "Shared Drives" feature is enabled for the `C:` drive (Docker for Windows > Settings > Shared Drives). See [Configuring Docker for Windows Shared Drives](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (MSDN Blog).
+## 使用
 
-## Usage
+### 启动
 
-### Bringing up the stack
-
-**Note**: In case you switched branch or updated a base image - you may need to run `docker-compose build` first
-
-Start the stack using `docker-compose`:
 
 ```console
-$ docker-compose up
+$ echo "nameserver 9.9.9.9" > /etc/resolv.conf
+$ docker-compose build && docker-compose up -d
 ```
 
-You can also run all services in the background (detached mode) by adding the `-d` flag to the above command.
+访问 Kibana web UI
+[http://localhost:5601](http://localhost:5601)
 
-Give Kibana a few seconds to initialize, then access the Kibana web UI by hitting
-[http://localhost:5601](http://localhost:5601) with a web browser.
-
-By default, the stack exposes the following ports:
+默认容器开放以下端口：
 * 5000: Logstash TCP input.
 * 9200: Elasticsearch HTTP
 * 9300: Elasticsearch TCP transport
 * 5601: Kibana
 
-**WARNING**: If you're using `boot2docker`, you must access it via the `boot2docker` IP address instead of `localhost`.
-
-**WARNING**: If you're using *Docker Toolbox*, you must access it via the `docker-machine` IP address instead of
-`localhost`.
-
-Now that the stack is running, you will want to inject some log entries. The shipped Logstash configuration allows you
-to send content via TCP:
+测试：
 
 ```console
 $ nc localhost 5000 < /path/to/logfile.log
 ```
 
-## Initial setup
+## 初始设置
 
-### Default Kibana index pattern creation
+### 创建Kibana默认 index pattern
 
-When Kibana launches for the first time, it is not configured with any index pattern.
+#### 1.通过Kibana web UI
 
-#### Via the Kibana web UI
+**NOTE**: 在通过Kibana Web UI配置Logstash索引模式之前，您需要将数据注入Logstash。 然后你要做的就是点击* Create *按钮。
 
-**NOTE**: You need to inject data into Logstash before being able to configure a Logstash index pattern via the Kibana web
-UI. Then all you have to do is hit the *Create* button.
+参考 [Connect Kibana with
+Elasticsearch](https://www.elastic.co/guide/en/kibana/current/connect-to-elasticsearch.html) 
 
-Refer to [Connect Kibana with
-Elasticsearch](https://www.elastic.co/guide/en/kibana/current/connect-to-elasticsearch.html) for detailed instructions
-about the index pattern configuration.
+#### 2.使用命令行
 
-#### On the command line
-
-Create an index pattern via the Kibana API:
+通过Kibana API创建索引模式:
 
 ```console
 $ curl -XPOST -D- 'http://localhost:5601/api/saved_objects/index-pattern' \
@@ -129,55 +96,31 @@ $ curl -XPOST -D- 'http://localhost:5601/api/saved_objects/index-pattern' \
     -d '{"attributes":{"title":"logstash-*","timeFieldName":"@timestamp"}}'
 ```
 
-The created pattern will automatically be marked as the default index pattern as soon as the Kibana UI is opened for the first time.
+## 配置
 
-## Configuration
+### Kibana配置
 
-**NOTE**: Configuration is not dynamically reloaded, you will need to restart the stack after any change in the
-configuration of a component.
+Kibana默认配置文件： `kibana/config/kibana.yml`.
 
-### How can I tune the Kibana configuration?
+### Logstash配置
 
-The Kibana default configuration is stored in `kibana/config/kibana.yml`.
+Logstash默认配置文件： `logstash/config/logstash.yml`.
 
-It is also possible to map the entire `config` directory instead of a single file.
+### Elasticsearch配置
 
-### How can I tune the Logstash configuration?
+Elasticsearch默认配置文件： `elasticsearch/config/elasticsearch.yml`.
 
-The Logstash configuration is stored in `logstash/config/logstash.yml`.
+### Elasticsearch cluster配置
 
-It is also possible to map the entire `config` directory instead of a single file, however you must be aware that
-Logstash will be expecting a
-[`log4j2.properties`](https://github.com/elastic/logstash-docker/tree/master/build/logstash/config) file for its own
-logging.
-
-### How can I tune the Elasticsearch configuration?
-
-The Elasticsearch configuration is stored in `elasticsearch/config/elasticsearch.yml`.
-
-You can also specify the options you want to override directly via environment variables:
-
-```yml
-elasticsearch:
-
-  environment:
-    network.host: "_non_loopback_"
-    cluster.name: "my-cluster"
-```
-
-### How can I scale out the Elasticsearch cluster?
-
-Follow the instructions from the Wiki: [Scaling out
+参考: [Scaling out
 Elasticsearch](https://github.com/deviantony/docker-elk/wiki/Elasticsearch-cluster)
 
-## Storage
+## 存储
 
-### How can I persist Elasticsearch data?
+### Elasticsearch数据持久化
 
-The data stored in Elasticsearch will be persisted after container reboot but not after container removal.
+存储在Elasticsearch中的数据将在容器重启后保留，但在容器删除后不会保留。
 
-In order to persist Elasticsearch data even after removing the Elasticsearch container, you'll have to mount a volume on
-your Docker host. Update the `elasticsearch` service declaration to:
 
 ```yml
 elasticsearch:
@@ -186,56 +129,38 @@ elasticsearch:
     - /path/to/storage:/usr/share/elasticsearch/data
 ```
 
-This will store Elasticsearch data inside `/path/to/storage`.
+把数据存储到： `/path/to/storage`.
 
-**NOTE:** beware of these OS-specific considerations:
-* **Linux:** the [unprivileged `elasticsearch` user][esuser] is used within the Elasticsearch image, therefore the
-  mounted data directory must be owned by the uid `1000`.
-* **macOS:** the default Docker for Mac configuration allows mounting files from `/Users/`, `/Volumes/`, `/private/`,
-  and `/tmp` exclusively. Follow the instructions from the [documentation][macmounts] to add more locations.
+* **注意:** [Elasticsearch镜像使用非特权用户 `elasticsearch` user][esuser] , 所以挂载的数据目录所有者uid必须为 `1000`.
 
 [esuser]: https://github.com/elastic/elasticsearch-docker/blob/016bcc9db1dd97ecd0ff60c1290e7fa9142f8ddd/templates/Dockerfile.j2#L22
-[macmounts]: https://docs.docker.com/docker-for-mac/osxfs/
 
-## Extensibility
 
-### How can I add plugins?
+## 扩展
 
-To add plugins to any ELK component you have to:
+### 添加插件
 
-1. Add a `RUN` statement to the corresponding `Dockerfile` (eg. `RUN logstash-plugin install logstash-filter-json`)
-2. Add the associated plugin code configuration to the service configuration (eg. Logstash input/output)
-3. Rebuild the images using the `docker-compose build` command
+步骤:
 
-### How can I enable the provided extensions?
+1. 在相应的`Dockerfile`添加`RUN`指令(如： `RUN logstash-plugin install logstash-filter-json`)
+2. 将关联的插件代码配置添加到service配置中 (如： Logstash input/output)
+3. 执行命令`docker-compose build`
 
-A few extensions are available inside the [`extensions`](extensions) directory. These extensions provide features which
-are not part of the standard Elastic stack, but can be used to enrich it with extra integrations.
+## JVM调整
 
-The documentation for these extensions is provided inside each individual subdirectory, on a per-extension basis. Some
-of them require manual changes to the default ELK configuration.
+### 内存设置
 
-## JVM tuning
+Elasticsearch和Logstash的JVM Heap大小默认使用主机内存的1/4[1/4 of the total host
+memory](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#default_heap_size)
 
-### How can I specify the amount of memory used by a service?
-
-By default, both Elasticsearch and Logstash start with [1/4 of the total host
-memory](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#default_heap_size) allocated to
-the JVM Heap Size.
-
-The startup scripts for Elasticsearch and Logstash can append extra JVM options from the value of an environment
-variable, allowing the user to adjust the amount of memory that can be used by each component:
+Elasticsearch和Logstash的启动脚本可以从环境变量的值附加额外的JVM options:
 
 | Service       | Environment variable |
 |---------------|----------------------|
 | Elasticsearch | ES_JAVA_OPTS         |
 | Logstash      | LS_JAVA_OPTS         |
 
-To accomodate environments where memory is scarce (Docker for Mac has only 2 GB available by default), the Heap Size
-allocation is capped by default to 256MB per service in the `docker-compose.yml` file. If you want to override the
-default JVM configuration, edit the matching environment variable(s) in the `docker-compose.yml` file.
-
-For example, to increase the maximum JVM Heap Size for Logstash:
+修改`docker-compose.yml`文件
 
 ```yml
 logstash:
@@ -244,33 +169,15 @@ logstash:
     LS_JAVA_OPTS: "-Xmx1g -Xms1g"
 ```
 
-### How can I enable a remote JMX connection to a service?
+## 升级
 
-As for the Java Heap memory (see above), you can specify JVM options to enable JMX and map the JMX port on the docker
-host.
+### 版本升级
 
-Update the `{ES,LS}_JAVA_OPTS` environment variable with the following content (I've mapped the JMX service on the port
-18080, you can change that). Do not forget to update the `-Djava.rmi.server.hostname` option with the IP address of your
-Docker host (replace **DOCKER_HOST_IP**):
-
-```yml
-logstash:
-
-  environment:
-    LS_JAVA_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=18080 -Dcom.sun.management.jmxremote.rmi.port=18080 -Djava.rmi.server.hostname=DOCKER_HOST_IP -Dcom.sun.management.jmxremote.local.only=false"
-```
-
-## Updates
-
-### Using a newer stack version
-
-To use a different Elastic Stack version than the one currently available in the repository, simply change the version
-number inside the `.env` file, and rebuild the stack with:
+修改项目根目录下 `.env`文件，然后执行以下命令:
 
 ```console
 $ docker-compose build
 $ docker-compose up
 ```
 
-**NOTE**: Always pay attention to the [upgrade instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html)
-for each individual component before performing a stack upgrade.
+**注意**: 参考[upgrade instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html)
