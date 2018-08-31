@@ -141,6 +141,7 @@ elasticsearch:
 
 把数据存储到： `/path/to/storage`.
 
+**NOTE:** 默认把ELK数据存储到/data/elk，参见：https://github.com/Zer0d0y/docker-elk#%E5%90%AF%E5%8A%A8
 **NOTE:** [Elasticsearch镜像使用非特权用户 `elasticsearch` user][esuser] , 所以挂载的数据目录所有者uid必须为 `1000`.
 
 [esuser]: https://github.com/elastic/elasticsearch-docker/blob/016bcc9db1dd97ecd0ff60c1290e7fa9142f8ddd/templates/Dockerfile.j2#L22
