@@ -56,6 +56,16 @@ $ chcon -R system_u:object_r:admin_home_t:s0 docker-elk/
 ```console
 $ echo "nameserver 9.9.9.9" > /etc/resolv.conf
 $ git clone https://github.com/Zer0d0y/docker-elk.git
+
+$ # 默认把ELK数据存储到/data/elk
+$ mkdir -p /data/elk
+$ # 如果存在uid为1000的用户如，elk，则执行：
+$ chown -R elk:elk /data
+# 否则，执行
+$ groupadd -g 1000 elasticsearch && \
+    adduser -u 1000 -g 1000 -d /data/elk elasticsearch
+$ chown -R elasticsearch:elasticsearch /data
+
 $ docker-compose build && docker-compose up -d
 ```
 
